@@ -1,5 +1,7 @@
 import telebot
 from telebot import types
+import json
+from telebot.types import  ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 
 bot = telebot.TeleBot('5995969827:AAEHc4p9-gY0gE_b511y7rXADUAO_qWEcyI')
 
@@ -71,6 +73,54 @@ def check_callback_data(call):
             bot.delete_message(call.message.chat.id, call.message.message_id - 1)
             bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
 
+        #Страницы для категории вещей
+        req = call.data.split('_')
+
+        #обработка кнопки скрыть, скрыть-возврат к списку категорий товара
+        if req[0] == 'unseen':
+            keyboard_menu = katalog_menu()
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+
+            bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
+
+            # Обработка кнопок - вперед и назад
+        elif 'pagination' in req[0]:
+
+            # Расспарсим полученный JSON
+            json_string = json.loads(req[0])
+            count = json_string['CountPage']
+            page = json_string['NumberPage']
+
+            # Пересоздаем markup
+            markup = InlineKeyboardMarkup()
+            markup.add(InlineKeyboardButton(text='Скрыть', callback_data='unseen'))
+
+            # markup для первой страницы
+            if page == 1:
+                markup.add(InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
+                           InlineKeyboardButton(text=f'Вперёд --->',
+                                                callback_data="{\"method\":\"pagination\",\"NumberPage\":" + str(
+                                                    page + 1) + ",\"CountPage\":" + str(count) + "}"))
+
+            # markup для второй страницы
+            elif page == count:
+                markup.add(InlineKeyboardButton(text=f'<--- Назад',
+                                                callback_data="{\"method\":\"pagination\",\"NumberPage\":" + str(
+                                                    page - 1) + ",\"CountPage\":" + str(count) + "}"),
+                           InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '))
+
+            # markup для остальных страниц
+            else:
+                markup.add(InlineKeyboardButton(text=f'<--- Назад',
+                                                callback_data="{\"method\":\"pagination\",\"NumberPage\":" + str(
+                                                    page - 1) + ",\"CountPage\":" + str(count) + "}"),
+                           InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
+                           InlineKeyboardButton(text=f'Вперёд --->',
+                                                callback_data="{\"method\":\"pagination\",\"NumberPage\":" + str(
+                                                    page + 1) + ",\"CountPage\":" + str(count) + "}"))
+            bot.edit_message_text(f'Страница {page} из {count}', reply_markup=markup, chat_id=call.message.chat.id,
+                                  message_id=call.message.message_id)
+
 
 @bot.message_handler(content_types=['text'])
 def get_text(message):
@@ -112,7 +162,19 @@ def get_text(message):
         bot.send_message(message.chat.id, text='Каталог товаров',
                          parse_mode='html', reply_markup=katalog)
 
-    #if message.text == 'Обувь':
+    if message.text == 'Обувь':
+
+        #3 страницы обуви
+        count = 3
+        page = 1
+        shoes = types.InlineKeyboardMarkup()
+        shoes.add(InlineKeyboardButton(text='Скрыть', callback_data='unseen'))
+        shoes.add(InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
+                   InlineKeyboardButton(text=f'Вперёд --->',
+                                        callback_data="{\"method\":\"pagination\",\"NumberPage\":" + str(
+                                            page + 1) + ",\"CountPage\":" + str(count) + "}"))
+
+        bot.send_message(message.chat.id, ".", reply_markup=shoes)
 
 
 bot.polling(none_stop=True)
