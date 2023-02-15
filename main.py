@@ -9,7 +9,7 @@ bot = telebot.TeleBot('5995969827:AAEHc4p9-gY0gE_b511y7rXADUAO_qWEcyI')
 def main_menu():
 
     # Кол-во позиций в меню клавиатуры - много
-    keyboard_menu = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+    keyboard_menu = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     info = types.KeyboardButton(text='📢Информация')
     helping = types.KeyboardButton(text='❓Помощь в выборе')
     katalog = types.KeyboardButton(text='🛍️Каталог')
@@ -25,12 +25,13 @@ def main_menu():
 def katalog_menu():
 
     #Кол-во позиций в меню клавиатуры - много
-    katalog_menu = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+    katalog_menu = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     shoes = types.KeyboardButton(text='Обувь')
     clothes = types.KeyboardButton(text='Одежда')
     accessories = types.KeyboardButton(text='Аксессуары')
+    back = types.KeyboardButton(text='Назад')
 
-    katalog_menu.add(shoes, clothes, accessories)
+    katalog_menu.add(shoes, clothes, accessories, back)
 
     return katalog_menu
 
@@ -126,15 +127,16 @@ def check_callback_data(call):
 def get_text(message):
     if message.text == '📢Информация':
 
-        # Крепеж главного меню к фотке инфы
-        keyboard_menu = main_menu()
-        photo = open('photoInfo.jpeg', 'rb')
-        bot.send_photo(message.chat.id, photo, reply_markup=keyboard_menu)
-
-        # кнопка отмены, чтобы не спамить
+        # фотка инфы
         info = types.InlineKeyboardMarkup()
         cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancell")
         info.add(cancel)
+
+        photo = open('photoInfo.jpeg', 'rb')
+        bot.send_photo(message.chat.id, photo)
+
+        # кнопка отмены, чтобы не спамить, удаляет 2 сообщения
+
         bot.send_message(message.chat.id, text='<b>1.	Что такое POIZON и зачем заказывать из Китая?</b>\n'
                                                'POIZON(DeWu)- китайский магазин ОРИГИНАЛЬНЫХ брендов. '
                                                'При нынешних введенных ограничениях, это звучит очень интересно,'
@@ -155,12 +157,8 @@ def get_text(message):
         photo = open('photoKatalog.jpg', 'rb')
         bot.send_photo(message.chat.id, photo, reply_markup=keyboard_menu)
 
-        #не забываем про кнопочку отмены, чтобы не мусорить, прикреплена к сообщению
-        katalog = types.InlineKeyboardMarkup()
-        cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancell")
-        katalog.add(cancel)
         bot.send_message(message.chat.id, text='Каталог товаров',
-                         parse_mode='html', reply_markup=katalog)
+                         parse_mode='html')
 
     if message.text == 'Обувь':
 
