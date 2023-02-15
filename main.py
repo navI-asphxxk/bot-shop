@@ -35,31 +35,51 @@ def start(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def check_callback_data(call):
-
-    #исправляет значок загрузки
+    # исправляет значок загрузки
     if call.message:
         bot.answer_callback_query(callback_query_id=call.id)
 
+        #Удаление последнего сообщения бота
         if call.data == "cancel":
             keyboard_menu = main_menu()
 
-            bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
             bot.delete_message(call.message.chat.id, call.message.message_id)
-            #bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.chat.id, text='cancel')
+            bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
+            # bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.chat.id, text='cancel')
 
+        #Удаление 2х последних сообщений бота
+        if call.data == "cancell":
+            keyboard_menu = main_menu()
+
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.delete_message(call.message.chat.id, call.message.message_id-1)
+            bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
 
 
 @bot.message_handler(content_types=['text'])
 def get_text(message):
     if message.text == '📢Информация':
+
+        #Крепеж главного меню к фотке инфы
+        keyboard_menu = main_menu()
+        photo = open('photoInfo.jpeg', 'rb')
+        bot.send_photo(message.chat.id, photo, reply_markup=keyboard_menu)
+
         info = types.InlineKeyboardMarkup()
-        cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancel")
+        cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancell")
         info.add(cancel)
         bot.send_message(message.chat.id, text='<b>1.	Что такое POIZON и зачем заказывать из Китая?</b>\n'
                                                'POIZON(DeWu)- китайский магазин ОРИГИНАЛЬНЫХ брендов. '
                                                'При нынешних введенных ограничениях, это звучит очень интересно,'
                                                ' а учитывая стоимость, которая НИЖЕ чем в РФ НА 30-40%...',
                          parse_mode='html', reply_markup=info)
+
+    if message.text == '❓Помощь в выборе':
+        helping = types.InlineKeyboardMarkup()
+        cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancel")
+        helping.add(cancel)
+        bot.send_message(message.chat.id, text='<i>Помощь в выборе товара -</i>\n'
+                                               ' @asphxxk', parse_mode='html', reply_markup=helping)
 
 
 bot.polling(none_stop=True)
