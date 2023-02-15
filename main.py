@@ -32,4 +32,18 @@ def start(message):
     photo = open('photoPrivet.jpg', 'rb')
     bot.send_photo(message.chat.id, photo, reply_markup=keyboard_menu)
 
+
+@bot.callback_query_handler(func=lambda call: True)
+def check_callback_data(call):
+    # if call.message:
+    #    bot.answer_callback_query(callback_query_id=call.id)
+
+    if call.data == "cancel":
+        main_menu()
+
+        #bot.edit_message_text(call.message.chat.id, "cancel", parse_mode='html')
+        bot.delete_message(call.chat.id, call.message_id - 1)
+
+
+
 bot.polling(none_stop=True)
