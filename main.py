@@ -35,15 +35,31 @@ def start(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def check_callback_data(call):
-    # if call.message:
-    #    bot.answer_callback_query(callback_query_id=call.id)
 
-    if call.data == "cancel":
-        main_menu()
+    #исправляет значок загрузки
+    if call.message:
+        bot.answer_callback_query(callback_query_id=call.id)
 
-        #bot.edit_message_text(call.message.chat.id, "cancel", parse_mode='html')
-        bot.delete_message(call.chat.id, call.message_id - 1)
+        if call.data == "cancel":
+            keyboard_menu = main_menu()
 
+            bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            #bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.chat.id, text='cancel')
+
+
+
+@bot.message_handler(content_types=['text'])
+def get_text(message):
+    if message.text == '📢Информация':
+        info = types.InlineKeyboardMarkup()
+        cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancel")
+        info.add(cancel)
+        bot.send_message(message.chat.id, text='<b>1.	Что такое POIZON и зачем заказывать из Китая?</b>\n'
+                                               'POIZON(DeWu)- китайский магазин ОРИГИНАЛЬНЫХ брендов. '
+                                               'При нынешних введенных ограничениях, это звучит очень интересно,'
+                                               ' а учитывая стоимость, которая НИЖЕ чем в РФ НА 30-40%...',
+                         parse_mode='html', reply_markup=info)
 
 
 bot.polling(none_stop=True)
