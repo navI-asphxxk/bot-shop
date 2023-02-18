@@ -77,6 +77,7 @@ def check_callback_data(call):
             bot.send_message(call.message.chat.id, text='cancel', parse_mode='html', reply_markup=keyboard_menu)
 
         callback_pages.callback_shoes_pages(call)
+        callback_pages.callback_clothes_pages(call)
 
         if call.data == "buy":
             bot.send_message(call.message.chat.id,
@@ -111,6 +112,15 @@ def get_text(message):
         bot.send_message(message.chat.id, text='<i>Помощь в выборе товара -</i>\n'
                                                ' @asphxxk', parse_mode='html', reply_markup=helping)
 
+    if message.text =='📩Отзывы':
+        feedback = types.InlineKeyboardMarkup()
+        feed = types.InlineKeyboardButton("Отзывы", url="https://otzovik.com/lastreviews")
+        cancel = types.InlineKeyboardButton("❌Отмена", callback_data="cancel")
+        feedback.add(feed)
+        feedback.add(cancel)
+        bot.send_message(message.chat.id, text='здесь вы можете ознакомиться с отзывами',
+                         parse_mode='html', reply_markup=feedback)
+
     if message.text == '🛍️Каталог':
         # категории в каталоге в меню клавиатуры, прикреплены к фото
         photo = open('photoKatalog.jpg', 'rb')
@@ -127,6 +137,9 @@ def get_text(message):
 
     if message.text == 'Обувь':
         text_pages.text_shoes_pages(message)
+
+    if message.text == 'Одежда':
+        text_pages.text_clothes_pages(message)
 
 
 # def callback_shoes_pages(call):

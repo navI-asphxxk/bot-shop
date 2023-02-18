@@ -24,4 +24,8 @@ shoes_price_pages = [10,
                      0,
                      0]
 
-shoes_photo_pages = []
+clothes_name_pages = ["Стоник поношенный",
+                      "Стоник не поношенный"]
+
+clothes_price_pages = [999999999,
+                       1]

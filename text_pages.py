@@ -21,8 +21,26 @@ def text_shoes_pages(message):
     markup.add(InlineKeyboardButton(text='Скрыть', callback_data='unseen'))
     markup.add(InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
                InlineKeyboardButton(text=f'Вперёд --->',
-                                    callback_data="{\"method\":\"pagination\",\"NumberPage\":" + str(
+                                    callback_data="{\"method\":\"shoes\",\"NumberPage\":" + str(
                                         page + 1) + ",\"CountPage\":" + str(count) + "}"))
     markup.add(InlineKeyboardButton(text=f'{data.shoes_price_pages[page - 1]}руб - Купить', callback_data='buy'))
 
-    bot.send_message(message.from_user.id, f'{data.shoes_name_pages[0]}', reply_markup=markup)
+    bot.send_photo(message.chat.id, open(f'pages/shoesPages/{page}.jpg', 'rb'),
+                   caption=f'{data.shoes_name_pages[0]}', reply_markup=markup)
+    # bot.send_message(message.from_user.id, f'{data.shoes_name_pages[0]}', reply_markup=markup)
+
+
+def text_clothes_pages(message):
+    count = count_pages(data.clothes_name_pages)
+    page = 1
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton(text='Скрыть', callback_data='unseen'))
+    markup.add(InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
+               InlineKeyboardButton(text=f'Вперёд --->',
+                                    callback_data="{\"method\":\"clothes\",\"NumberPage\":" + str(
+                                        page + 1) + ",\"CountPage\":" + str(count) + "}"))
+    markup.add(InlineKeyboardButton(text=f'{data.clothes_price_pages[page - 1]}руб - Купить', callback_data='buy'))
+
+    bot.send_photo(message.chat.id, open(f'pages/clothesPages/{page}.jpg', 'rb'),
+                   caption=f'{data.clothes_name_pages[0]}', reply_markup=markup)
+
