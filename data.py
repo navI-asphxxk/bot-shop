@@ -29,3 +29,9 @@ clothes_name_pages = ["Стоник поношенный",
 
 clothes_price_pages = [999999999,
                        1]
+
+accesory_name_pages = ["Цепь арго мужская",
+                      "Крест доминика Торето - никогда не отворачивайся от семьи"]
+
+accesory_price_pages = [1000,
+                        500]

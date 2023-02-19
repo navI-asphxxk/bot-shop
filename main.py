@@ -43,15 +43,16 @@ def katalog_menu():
 
 @bot.message_handler(commands=['start'])
 def start(message):
+
+    photo = open('photoPrivet.jpg', 'rb')
+    bot.send_photo(message.chat.id, photo, reply_markup=main_menu())
+
     bot.send_message(message.chat.id, '<b>мы занимаемся доставкой оригинальной продукции '
                                       'всех самых популярных брендов: Nike, Adidas, Jordan, Gucci, '
                                       'Balenciaga и др. - с магазина Poizon. При нынешних ограничениях '
                                       'достать оригинальный товар проблематично, поэтому мы предоставляем '
                                       'свои услуги по низким ценам.</b>',
                      parse_mode='html', reply_markup=main_menu())
-
-    photo = open('photoPrivet.jpg', 'rb')
-    bot.send_photo(message.chat.id, photo, reply_markup=main_menu())
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -78,6 +79,7 @@ def check_callback_data(call):
 
         callback_pages.callback_shoes_pages(call)
         callback_pages.callback_clothes_pages(call)
+        callback_pages.callback_accesory_pages(call)
 
         if call.data == "buy":
             bot.send_message(call.message.chat.id,
@@ -140,6 +142,9 @@ def get_text(message):
 
     if message.text == 'Одежда':
         text_pages.text_clothes_pages(message)
+
+    if message.text == 'Аксессуары':
+        text_pages.text_accesory_pages(message)
 
 
 # def callback_shoes_pages(call):
